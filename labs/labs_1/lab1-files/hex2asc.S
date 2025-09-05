@@ -7,7 +7,7 @@
 	.global hexasc
 
 hex2asc:
-	li	a0, 12		# test number (from 0 to 15)
+	li	a0, 17		# test number (from 0 to 15)
 	
 	addi    sp,sp,-4
 	sw      ra,0(sp)
@@ -23,6 +23,8 @@ hex2asc:
 
   # You can write your own code for hexasc here
   hexasc:
+  	andi a0, a0, 0xF       
+  
 	addi a2, zero, 0x37  
   	addi a1, zero, 0x30
   	addi a4, zero, 0
