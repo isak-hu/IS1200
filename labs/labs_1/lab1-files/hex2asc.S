@@ -23,15 +23,15 @@ hex2asc:
 
   # You can write your own code for hexasc here
   hexasc:
-  	andi a0, a0, 0xF       
+  	andi a0, a0, 0xF     # restettar allt förutom sista 4 LSB till 0     
   
 	addi a2, zero, 0x37  
   	addi a1, zero, 0x30
   	addi a4, zero, 0
   	
-  	slti a3, a0, 10
+  	slti a3, a0, 10      # if a0 < 10
   	
-  	bne a3, a4, else
+  	bne a3, a4, else     # if a0 < 10 add 0x30 if a0 > 10 add 0x37
   	add a0, a0, a2
   	jr ra
   	
