@@ -10,15 +10,15 @@
 ###################
 # Macros for RARS #
 ###################
-#.macro	PUSH (%reg)
-#	addi	sp,sp,-4
-#	sw	%reg,0(sp) 
-#.end_macro
+.macro	PUSH (%reg)
+	addi	sp,sp,-4
+	sw	%reg,0(sp) 
+.end_macro
 
-#.macro	POP (%reg)
-#	lw	%reg,0(sp)
-#	addi	sp,sp,4
-#.end_macro
+.macro	POP (%reg)
+	lw	%reg,0(sp)
+	addi	sp,sp,4
+.end_macro
 ###################
 # Macros for DTEK #
 ###################
@@ -110,3 +110,110 @@ tiend:	sw	t0,0(a0)	# save updated result
 #########################################################
 # Place for your functions: time2string, hex2asc, delay.#
 #########################################################
+
+
+
+delay: 
+	jr ra
+
+
+time2string:
+
+	PUSH(ra)
+	
+	PUSH(a0)
+
+    	PUSH(t0)
+
+    	PUSH(t1)
+
+    	PUSH(t2)
+
+    	PUSH(t3)
+
+	# M1M2 : S1S2
+
+	#push the 4 bit that matters into the 4 lsb possition 
+	
+	srli	t0, a1, 12	#M1  	
+	srli	t1, a1, 8	#M2
+	srli	t2, a1, 4 	#S1
+ 	
+ 	#take only the 4 bits that mattters
+ 	 
+	andi	t0, t0, 0x000f		#M1
+	andi	t1, t1, 0x000f		#M2
+	andi	t2, t2, 0x000f		#S1
+	andi	t3, a1, 0x000f		#S2
+	
+	#converst each 4 bit into asci 
+	
+	addi 	a0, t0, 0  		#M1	
+	jal 	hex2asc
+	addi	t0, a0, 0
+	
+	addi 	a0, t1, 0 		#M2
+	jal 	hex2asc
+	addi	t1, a0, 0
+	
+	addi 	a0, t2, 0 		#S1
+	jal 	hex2asc
+	addi	t2, a0, 0
+	
+	addi 	a0, t3, 0 		#S2
+	jal 	hex2asc
+	addi	t3, a0, 0
+	
+	# creates a array like structore for M1M2 : S1S2 /0
+	
+	POP(a0)
+	
+	sb 	t0, 0(a0)       	 # M1 
+	sb 	t1, 1(a0)       	 # M2 
+
+	li 	t4, 0x3A         	# create :
+	sb 	t4, 2(a0)        	# store :
+
+	sb 	t2, 3(a0)        	# S1 
+	sb 	t3, 4(a0)        	# S2 
+	sb 	zero, 5(a0)      	# null terminator
+	
+	POP(t3)
+
+    	POP(t2)
+
+    	POP(t1)
+
+    	POP(t0)
+
+    	POP(ra)
+	
+	jr ra
+
+hex2asc:
+		
+	addi    sp,sp,-4
+	sw      ra,0(sp)
+	
+	jal	hexasc		# call hexasc
+
+	lw      ra,0(sp)
+	addi    sp,sp,4
+	jr      ra
+hexasc:
+  	andi a0, a0, 0xF     # restettar allt förutom sista 4 LSB till 0     
+  
+	addi	a2, zero, 0x37  
+  	addi	a1, zero, 0x30
+  	addi	a4, zero, 0
+  	
+  	slti	a3, a0, 10      # if a0 < 10
+  	
+  	bne	a3, a4, else     # if a0 < 10 add 0x30 if a0 > 10 add 0x37
+  	add	a0, a0, a2
+  	jr	ra
+  	
+  	else:
+  	add	a0, a0, a1
+  	jr	ra	
+
