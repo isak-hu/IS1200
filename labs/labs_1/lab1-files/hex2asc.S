@@ -4,9 +4,10 @@
 
 	.text
 	.globl hex2asc
+	.global hexasc
 
 hex2asc:
-	li	a0, 4		# test number (from 0 to 15)
+	li	a0, 12		# test number (from 0 to 15)
 	
 	addi    sp,sp,-4
 	sw      ra,0(sp)
@@ -21,4 +22,17 @@ hex2asc:
 	jr      ra	
 
   # You can write your own code for hexasc here
-  #
+  hexasc:
+	addi a2, zero, 0x37  
+  	addi a1, zero, 0x30
+  	addi a4, zero, 0
+  	
+  	slti a3, a0, 10
+  	
+  	bne a3, a4, else
+  	add a0, a0, a2
+  	jr ra
+  	
+  	else:
+  		add a0, a0, a1
+  		jr ra
