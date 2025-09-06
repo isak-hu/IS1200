@@ -120,8 +120,6 @@ delay:
 time2string:
 
 	PUSH(ra)
-	
-	PUSH(a0)
 
     	PUSH(t0)
 
@@ -131,6 +129,7 @@ time2string:
 
     	PUSH(t3)
 
+	PUSH(a0)
 	# M1M2 : S1S2
 
 	#push the 4 bit that matters into the 4 lsb possition 
