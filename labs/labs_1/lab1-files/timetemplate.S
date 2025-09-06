@@ -54,7 +54,7 @@ timetemplate:
 	jal     display_string
 	
 	# wait a little
-	li	a0, 2		# ms
+	li	a0, 1000		# ms
 	jal	delay
 	
 	# call tick
@@ -114,22 +114,54 @@ tiend:	sw	t0,0(a0)	# save updated result
 
 
 delay: 
+
+	PUSH (ra) 			#för att kunna gå tillbaka 
+	PUSH (a0)			#för att behålla orignal time gap 
+	
+		
+while: 	
+	slti 	t0, a0, 1  		# while (a0!<1)  så  while( ms > 0 )
+	bne 	t0, zero, while_done 	# break if a0 < 1
+	
+	addi 	a0, a0, -1 		# decrease: ms = ms – 1;
+	
+	li 	t1, 30			# smaller than int
+	li	t2, 0  			# i
+	
+	j  	for
+	
+ 		
+	
+
+
+for: 	bge t2, t1, for_done 	# i >= 10?
+
+ 	addi t2, t2, 1 		# i = i + 1
+
+ 	j for 			# repeat loop
+
+for_done:
+	j while
+
+while_done:
+
+	POP (a0)
+	POP (ra)
+
 	jr ra
 
 
 time2string:
 
-	PUSH(ra)
+	
 
-    	PUSH(t0)
-
-    	PUSH(t1)
-
-    	PUSH(t2)
-
-    	PUSH(t3)
-
-	PUSH(a0)
+    	#PUSH(t0)		blir caleld från timetemplate där t0 inte är används därför behövs de int sparas
+    	#PUSH(t1)
+    	#PUSH(t2)
+    	#PUSH(t3)
+	PUSH(ra)		# sparas för att kunna gå tillbacka till timetemplate
+	PUSH(a0)		# sparar för att den va initerads som timstr
+	
 	# M1M2 : S1S2
 
 	#push the 4 bit that matters into the 4 lsb possition 
@@ -165,25 +197,23 @@ time2string:
 	
 	# creates a array like structore for M1M2 : S1S2 /0
 	
-	POP(a0)
+	POP(a0)   			# gets back the adress 
 	
-	sb 	t0, 0(a0)       	 # M1 
-	sb 	t1, 1(a0)       	 # M2 
+	sb 	t0, 0(a0)       	# M1 
+	sb 	t1, 1(a0)       	# M2 
 
 	li 	t4, 0x3A         	# create :
 	sb 	t4, 2(a0)        	# store :
 
 	sb 	t2, 3(a0)        	# S1 
 	sb 	t3, 4(a0)        	# S2 
+	
 	sb 	zero, 5(a0)      	# null terminator
 	
-	POP(t3)
-
-    	POP(t2)
-
-    	POP(t1)
-
-    	POP(t0)
+	#POP(t3)
+    	#POP(t2)
+    	#POP(t1)
+	#POP(t0)
 
     	POP(ra)
 	
