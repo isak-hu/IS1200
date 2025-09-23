@@ -13,34 +13,39 @@
 void print_number(int n);
 int is_prime(int n);
 
+int* array;
+
+
 void print_sieves(int n)
 {
-    char *prime = malloc((n + 8) * sizeof(char));
+    int size = n*n+1;
 
-    prime[0] = 0;
-    prime[1] = 0;
+    int* array = malloc(size * sizeof(int));
 
-    for (int i = 2; i <= n; i++)
+    array[1] = 2;
+
+
+    char prime[n*n + 8];
+
+    for (int i = 2; i <= n*n; i++)
     {
         prime[i] = 1;
     }
 
-    for (int p = 2; p <= n; p++)
+    for (int p = 2,i = 1; p <= n*n; p++)
     {
         if (prime[p] == 1)
-        {
+        { 
+            array[i] = p;
+            i++;
 
-            print_number(p);
-
-            for (int m = 2; m * p < n; m++)
+            for (int m = 2; m * p < n*n; m++)
             {
                 prime[m * p] = 0;
             }
         }
     }
-    printf("\n");
-    free (prime);
-    
+    printf("%d\n", array[n]);
 }
 
 void print_number(int n)

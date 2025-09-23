@@ -40,7 +40,15 @@ int print_sieves(int n){
     printf("\n"); // Avsluta med en ny rad
 }
 
-int main() {
-    print_sieves(105);  
-    return 0;
+// 'argc' contains the number of program arguments, and
+// 'argv' is an array of char pointers, where each
+// char pointer points to a null-terminated string.
+int main(int argc, char *argv[]){
+    if(argc == 2)
+    {
+        print_sieves(atoi(argv[1]));
+    }
+  else
+    printf("Please state an integer number.\n");
+  return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #define COLUMNS 6
 
 
@@ -20,7 +21,7 @@ int print_sieves(int n){
     }
 
     // För varje tal från 2 till sqrt(n), 
-    // Om p är markerat som primtal, markera alla multiplar av p som icke-primtal (0)
+    // Om i är markerat som primtal, markera alla multiplar av i som icke-primtal (0)
     for (int i = 2; i*i <= n; i++) {
         if (is_prime[i]) {
             for (int j = i*i; j <= n; j += i) {
@@ -38,7 +39,15 @@ int print_sieves(int n){
     printf("\n"); // Avsluta med en ny rad
 }
 
-int main() {
-    print_sieves(105);  
-    return 0;
+// 'argc' contains the number of program arguments, and
+// 'argv' is an array of char pointers, where each
+// char pointer points to a null-terminated string.
+int main(int argc, char *argv[]){
+    if(argc == 2)
+    {
+        print_sieves(atoi(argv[1]));
+    }
+  else
+    printf("Please state an integer number.\n");
+  return 0;
 }

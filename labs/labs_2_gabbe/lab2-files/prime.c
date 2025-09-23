@@ -17,7 +17,6 @@ int is_prime(int n) {
     for (int i = 2; i < n; i++) {
         if (n % i == 0) return 0; // n är delbart med i, inte primtal
     }
-
     return 1; // n är primtal
 }
 
