@@ -3,7 +3,7 @@ extern void delay(int);
 
 volatile int *button = (int *)0x040000e0; // adress of the GPIO
 
-static int prevstate[4] = {0, 0, 0, 0};
+static int prevstate[5] = {0, 0, 0, 0, 0};
 
 int get_btn(int pin)
 {
@@ -15,4 +15,10 @@ int get_btn(int pin)
     prevstate[pin] = now;
 
     return pressed;
+}
+int get_btn_held(int pin)
+{
+    int now = (*button >> pin) & 0x1; // current state
+    prevstate[pin] = now;             // update previous
+    return now;                       // returns 1 as long as held
 }

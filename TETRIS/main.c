@@ -3,6 +3,7 @@
 #include "dtekv-lib.h"
 #include "timer.h"
 extern void delay(int);
+extern volatile int softdrop_active;
 volatile int lvl;
 
 activepiece current;
@@ -15,12 +16,11 @@ void clearScreen(void)
 
 int main()
 {
-
   int score = 0;
 
   print("Game starting...\n");
   timerinit();          // initialize timer
-  generateseed();       // genrate seed
+  generateseed();       // generate seed
   clearboard();         // start with empty board
   spawnpiece(&current); // spawn first piece
 
@@ -31,12 +31,12 @@ int main()
       moveCurrent(&current, LEFT);
     if (get_btn(1))
       moveCurrent(&current, RIGHT);
-    if (get_btn(2))
-      moveCurrent(&current, DOWN);
-    // smash down
     if (get_btn(3))
+      moveCurrent(&current, DOWN);
+    if (get_btn(2))
       rotate(&current);
-    // smash down
+
+    softdrop_active = get_btn_held(4);
 
     // gravity
     if (tick)
@@ -49,15 +49,15 @@ int main()
       else
       {
         settlePiece(&current);
-        score += Lineclear(); // reached bottom or collided
+        score += Lineclear();
         spawnpiece(&current);
-        // spawn new piece
       }
     }
 
     // Refresh screen
     if (frames)
     {
+      frames = 0;
       lvl = level();
       clearScreen();
       printboard(&current, score);

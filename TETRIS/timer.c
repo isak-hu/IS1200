@@ -19,6 +19,12 @@ extern volatile int lvl;
 int timeoutcount = 0;
 int framescountt = 0;
 
+volatile int basetick = 48;
+
+// makes it fall faster
+volatile int softdrop_multiplier = 4;
+volatile int softdrop_active = 0;
+
 void timerinit(void)
 {
     *periodl = 0x7530; // set to 30000 cycles  = 1 ms
@@ -33,15 +39,21 @@ void handle_interrupt(unsigned cause)
 {
     if (cause == 16)
     {
-
         framescountt++;
 
         *status &= ~1;
-        if (timeoutcount == (48 - 5 * lvl))
+
+        // determine current interval based on soft drop
+        int current_interval = basetick;
+        if (softdrop_active)
+            current_interval = basetick / softdrop_multiplier;
+
+        if (timeoutcount >= (current_interval - 5 * lvl))
         {
             timeoutcount = 0;
-            tick = 1;
+            tick = 1; // trigger gravity movement
         }
+
         if (framescountt == 16) // 1 frame
         {
             framescountt = 0;
