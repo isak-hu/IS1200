@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "io.h": "c",
+        "game.h": "c",
+        "dtekv-lib.h": "c"
+    }
+}
