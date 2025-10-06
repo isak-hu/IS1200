@@ -22,7 +22,7 @@ int framescountt = 0;
 volatile int basetick = 48;
 
 // makes it fall faster
-volatile int softdrop_multiplier = 4;
+volatile int softdrop_multiplier = 8;
 volatile int softdrop_active = 0;
 
 void timerinit(void)

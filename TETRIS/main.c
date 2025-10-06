@@ -2,6 +2,7 @@
 #include "game.h"
 #include "dtekv-lib.h"
 #include "timer.h"
+#include "output.h"
 extern void delay(int);
 extern volatile int softdrop_active;
 volatile int lvl;
@@ -13,6 +14,31 @@ void clearScreen(void)
   print("\x1B[2J"); // Clear entire screen
   print("\x1B[H");  // Move cursor to top-left
 }
+
+// int main(void)
+// {
+//   output_init();
+
+//   int x = 0;
+//   int dx = 2;
+//   int tile_w = 20, tile_h = 20;
+
+//   while (1)
+//   {
+//     clear_backbuffer(0);
+
+//     draw_tile(x, 100, tile_w, tile_h, RED);
+
+//     swap_buffers_blocking(); // make this frame visible (blocking)
+
+//     x += dx;
+//     if (x <= 0 || x >= (get_vga_width() - tile_w))
+//       dx = -dx;
+
+//     delay(200); /* tune to visible speed */
+//   }
+//   return 0;
+// }
 
 int main()
 {
@@ -49,7 +75,7 @@ int main()
       else
       {
         settlePiece(&current);
-        score += Lineclear();
+        score += ((lvl + 1) * Lineclear());
         spawnpiece(&current);
       }
     }
@@ -59,8 +85,7 @@ int main()
     {
       frames = 0;
       lvl = level();
-      clearScreen();
-      printboard(&current, score);
+      draw_board(&current, score);
     }
   }
 }
