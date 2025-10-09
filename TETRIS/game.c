@@ -2,6 +2,7 @@
 #include "IO.h"
 #include "dtekv-lib.h"
 extern void delay(int);
+extern volatile int score;
 
 int totallinescleard = 0;
 
@@ -121,8 +122,23 @@ void draw_board(activepiece *p, int score)
         }
     }
 
-    // optional: draw score/level as rectangles or leave as later text
-    // e.g., draw_tile(10, 10, 50, 10, 255);
+    int scoreBoxX = BOARD_X + COLLUM * TILE_SIZE + 20; // ~230 px from left
+    int scoreBoxY = BOARD_Y;
+
+    // Draw border
+    draw_tile(scoreBoxX - 1, scoreBoxY - 1, 80 + 2, 1, 0b11111111);  // top
+    draw_tile(scoreBoxX - 1, scoreBoxY + 40, 80 + 2, 1, 0b11111111); // bottom
+    draw_tile(scoreBoxX - 1, scoreBoxY, 1, 40, 0b11111111);          // left
+    draw_tile(scoreBoxX + 80, scoreBoxY, 1, 40, 0b11111111);         // right
+
+    // Background fill
+    draw_tile(scoreBoxX, scoreBoxY, 80, 40, 0x20); // dark background
+
+    // Small "label" bar
+    draw_tile(scoreBoxX, scoreBoxY, 80, 8, 0x49); // header stripe
+
+    draw_score_label(scoreBoxX + 5, scoreBoxY + 10, 0xFF); // "SCORE"
+    draw_number(score, scoreBoxX + 5, scoreBoxY + 23, 0xFF);
 
     swap_buffers_blocking(); // show frame
 }
@@ -159,7 +175,8 @@ void spawnpiece(activepiece *p) // säger till current viklen bit den är och va
         // Reset
         clearboard();
         totallinescleard = 0; // reset level counter
-        spawnpiece(p);        // spawn new piece
+        spawnpiece(p);
+        score = 0; // spawn new piece
     }
 }
 int canMove(activepiece *p, int direction) // well can it ?
@@ -274,7 +291,7 @@ int Lineclear(void)
         // om den är full skippas denna steg ^^ så den effektiv sätt raderas
         else
         {
-            // Only increment linescleared for full lines
+
             linescleard++;
             totallinescleard++;
         }

@@ -18,6 +18,31 @@
 static volatile char *front_buffer = (volatile char *)FB0;
 static volatile char *back_buffer = (volatile char *)FB1;
 
+/* ------------------ 6x7 Font (Digits + SCORE) ------------------ */
+/* Each byte encodes 6 bits (MSB = leftmost pixel) */
+
+static const unsigned char font_digits[10][7] = {
+
+    {0x0E, 0x11, 0x13, 0x15, 0x19, 0x11, 0x0E}, // 0
+    {0x04, 0x0c, 0x14, 0x04, 0x04, 0x04, 0x1F}, // 1
+    {0x0E, 0x11, 0x02, 0x04, 0x08, 0x10, 0x1F}, // 2
+    {0x0E, 0x11, 0x01, 0x06, 0x01, 0x11, 0x0E}, // 3
+    {0x02, 0x06, 0x0A, 0x12, 0x1F, 0x02, 0x02}, // 4
+    {0x1F, 0x10, 0x10, 0x01, 0x0F, 0x11, 0x0E}, // 5
+    {0x0E, 0x11, 0x10, 0x1E, 0x11, 0x11, 0x0E}, // 6
+    {0x1F, 0x01, 0x02, 0x04, 0x08, 0x08, 0x08}, // 7
+    {0x0E, 0x11, 0x11, 0x0E, 0x11, 0x11, 0x0E}, // 8
+    {0x0E, 0x11, 0x11, 0x0F, 0x01, 0x11, 0x0E}  // 9
+};
+
+static const unsigned char font_letters[][7] = {
+    // S, C, O, R, E
+    {0x0E, 0x11, 0x10, 0x0E, 0x01, 0x11, 0x0E}, // S
+    {0x0E, 0x11, 0x10, 0x10, 0x11, 0x11, 0x0E}, // C
+    {0x0E, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0E}, // O
+    {0x1E, 0x11, 0x11, 0x1E, 0x11, 0x11, 0x11}, // R
+    {0x1F, 0x10, 0x10, 0x1E, 0x10, 0x10, 0x1F}  // E
+};
 /* Example palette bytes (you can choose any 0..255 values) */
 
 /* -------------------- API implementations -------------------- */
@@ -117,4 +142,58 @@ int get_vga_height(void)
 {
     int r = *RES_REG;
     return (r >> 16) & 0xFFFF;
+}
+
+void draw_char(const unsigned char *chardata, int x, int y, int color)
+{
+    for (int row = 0; row < 7; row++)
+    {
+        unsigned char bits = chardata[row];
+        for (int col = 0; col < 5; col++)
+        {
+            if (bits & (1 << (4 - col)))
+                draw_pixel(x + col, y + row, color);
+        }
+    }
+}
+
+void draw_digit(int digit, int x, int y, int color)
+{
+    if (digit < 0 || digit > 9)
+        return;
+    draw_char(font_digits[digit], x, y, color);
+}
+
+void draw_number(int num, int x, int y, int color)
+{
+    if (num == 0)
+    {
+        draw_digit(0, x, y, color);
+        return;
+    }
+
+    int digits[10];
+    int len = 0;
+
+    while (num > 0 && len < 10)
+    {
+        digits[len++] = num % 10;
+        num /= 10;
+    }
+
+    for (int i = len - 1; i >= 0; i--)
+    {
+        draw_digit(digits[i], x, y, color);
+        x += 6; // 5px width + 1 space
+    }
+}
+
+void draw_score_label(int x, int y, int color)
+{
+    // Draw letters S C O R E
+    for (int i = 0; i < 5; i++)
+    {
+        draw_char(font_letters[i], x, y, color);
+        x += 6; // next letter
+    }
 }
