@@ -1,0 +1,2 @@
+to compile :bash -c "make clean ; unset LD_LIBRARY_PATH; make"
+to run: bash -c " export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$HOME/intelFPGA/23.1std/qprogrammer/linux64 ; source ~/.bashrc ; dtekv-run main.bin"
